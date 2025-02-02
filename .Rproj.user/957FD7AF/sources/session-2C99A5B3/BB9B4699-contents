@@ -1,0 +1,165 @@
+---
+title: "Lab: bootstrap"
+subtitle: "BIOS 731: Advanced Statistical Computing"
+date: February 7, 2023
+output:
+  html_document: 
+    code_folding: hide
+    toc: true
+    toc_float: true
+hitheme: tomorrow
+highlighter: highlight.js
+---
+
+```{r, echo= FALSE, include = FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 7,
+  fig.height = 5
+)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+# Setup
+
+Load your libraries here. 
+
+```{r}
+library(tidyverse)
+```
+
+## Parametric vs. non-Parametric bootstrap
+
+Take the following problem from the slides:
+
+Suppose we have data from a $N(\mu, \sigma^2)$ distribution, $Y = \{y_1, \ldots, y_n\}$
+
+* Interested in obtaining an estimate of the standard error of the trimmed mean with 10% trimmed from each tail
+* To employ the parametric bootstrap, we would start by generating $n$ values from a $N(\hat{\mu}, \hat{\sigma}^2)$
+  * $\hat{\mu}, \hat{\sigma}^2$ are the ML estimates
+* Then, compute trimmed mean using the simulated sample
+  * repeat B = 10000 times
+
+
+### Exercise 1
+
+Implement both the parametric and non-parametric bootstrap for the trimmed mean here. Compare standard error estimates. Which do you expect to perform better? How would you evaluate what is "better"?
+
+
+```{r}
+## sample
+# define true mean and standard deviation
+mu = 5
+sigma2 = 2
+n = 20 # sample size
+
+# draw sample
+set.seed(2025)
+y = rnorm(n, mu, sqrt(sigma2))
+mu_hat = mean(y)
+sigma2_hat = var(y)
+
+# do bootstrap
+nboot = 10000
+
+boot_mean_np = boot_mean_parametric = rep(NA, nboot)
+for(b in 1:nboot){
+  # non parametric bootstrap
+  ystar = sample(y, size = n, replace = TRUE)
+  boot_mean_np[b] = mean(ystar, trim = 0.1)
+  
+  # parametric bootstrap
+  ystar_parametric = rnorm(n, mu_hat, sqrt(sigma2_hat))
+  boot_mean_parametric[b] = mean(ystar_parametric, trim = 0.1)
+}
+
+
+tibble(bootstrap_iteration = 1:nboot,
+       boot_mean_np = boot_mean_np,
+       boot_mean_parametric = boot_mean_parametric) %>%
+  pivot_longer(boot_mean_np:boot_mean_parametric, names_to = "method", values_to = "boot_mean") %>%
+  ggplot(aes(boot_mean, group = method)) +
+  geom_histogram() +
+  geom_vline(xintercept = mu) +
+  geom_vline(xintercept = mu_hat, color = "pink") +
+  facet_wrap(~method)
+
+sd(boot_mean_np)
+sd(boot_mean_parametric)
+
+
+```
+
+
+### Exercise 2
+
+For the non-parametric bootstrap, construct bootstrap-t confidence intervals for the trimmed mean using B = 1000 for the first level bootstrap and Bt = 500 for the second level bootstrap.
+
+```{r}
+# sample estimate
+theta_hat = mean(y,  trim = 0.1)
+
+nboot = 1000
+nboot_t = 500
+
+boot_mean_np = tstar = rep(NA, nboot)
+for(b in 1:nboot){
+  # non parametric bootstrap
+  ystar = sample(y, size = n, replace = TRUE)
+  boot_mean_np[b] = mean(ystar, trim = 0.1)
+  
+  boot_mean_b = rep(NA, nboot_t)
+  for(k in 1:nboot_t){
+    ystar_k = sample(ystar, size = n, replace = TRUE)
+    boot_mean_b[k] = mean(ystar_k, trim = 0.1)
+  }
+  
+  # calculate tstar
+  se_star = sd(boot_mean_b)
+  tstar[b] = (boot_mean_np[b] - theta_hat)/se_star
+}
+
+# percentile interval
+alpha = 0.05
+quantile(boot_mean_np, probs = c(alpha/2, 1-(alpha/2)))
+
+## bootstrap t interval
+hist(tstar)
+t_quants = quantile(tstar, probs = c(alpha/2, 1-(alpha/2)))
+se_theta_hat = sd(boot_mean_np)
+
+
+# lower CI
+theta_hat - t_quants[2] *se_theta_hat
+
+
+# upper CI
+theta_hat - t_quants[1] *se_theta_hat
+
+```
+
+
+
+## Permutation test example
+
+Assume there are two sets of independent normal r.v.’s with the same known
+variance and different means:
+
+* $X_i \sim N(\mu_1,\sigma^2)$
+* $Y_i \sim N(\mu^2, \sigma^2)$
+
+Our goal is to test $H_0: \mu_1 = \mu_2$.  Define test statistic: $t = \bar{X}-\bar{Y}$. Permutation test steps:
+
+1. Randomly shuffle labels of $X$ and $Y$
+2. Compute $t^* = \bar{X}^*-\bar{Y}^*$
+3. Repeat `nperm` times. Resulting $t^*$ values form the **empirical null distribution** of $t$.
+4. To compute p-values calculate $Pr(|t^*|> |t|)$
+
+
+
+
