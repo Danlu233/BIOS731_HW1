@@ -18,8 +18,8 @@ source(here::here("source", "05_nonparametric_boot_t_ci.R"))
 #number of simulations
 nsim = (.95*(1-.95))/(.01^2)
 
-nboot = 100
-nboot_t = 50
+nboot = 120
+nboot_t = 60
 
 alpha = 0.05
 
@@ -30,7 +30,8 @@ epsilon_dist = c("normal", "lognormal")
 param_grid = expand.grid(n = n,
                      n_sim = nsim,
                      beta_true = beta_true,
-                     epsilon_dist = epsilon_dist)
+                     epsilon_dist = epsilon_dist,
+                     stringsAsFactors = F)
 
 
 
@@ -46,11 +47,14 @@ registerDoParallel(cl)
 
 # generate a random seed for each simulated dataset
 set.seed(111)
-seed = floor(runif(nsim, 1, 10000))
+seed = floor(runif(nrow(param_grid), 1, 10000))
 
 foreach(s = 1:nrow(param_grid), .packages = c("tidyverse", "broom")) %dopar% {
   
   params = param_grid[s,]
+  
+  set.seed(seed[s])
+  sub_seed = floor(runif(nsim, 1, 10000))
   
   results = as.list(rep(NA, nsim))
   
@@ -58,7 +62,7 @@ foreach(s = 1:nrow(param_grid), .packages = c("tidyverse", "broom")) %dopar% {
     
     tryCatch({
       
-      set.seed(seed[i])
+      set.seed(sub_seed[i])
       
       ####################
       # simulate data
@@ -114,3 +118,5 @@ foreach(s = 1:nrow(param_grid), .packages = c("tidyverse", "broom")) %dopar% {
        file = here::here("data", filename))
   
 }
+
+stopImplicitCluster()

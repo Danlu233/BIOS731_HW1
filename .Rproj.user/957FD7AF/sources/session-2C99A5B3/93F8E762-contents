@@ -1,0 +1,136 @@
+---
+title: "Lab: simulations"
+subtitle: "BIOS 731: Advanced Statistical Computing"
+date: February 7, 2023
+output:
+  html_document: 
+    code_folding: hide
+    toc: true
+    toc_float: true
+hitheme: tomorrow
+highlighter: highlight.js
+---
+
+```{r, echo= FALSE, include = FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 7,
+  fig.height = 5
+)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+# Setup
+
+Load your libraries here. 
+
+```{r}
+
+```
+
+
+# Simulation study workflow
+
+First, use ADEMP guidelines to define the following
+
+* Simulation scenarios
+* Estimands/targets
+* Performance measures
+
+Then, for a given simulation scenario follow the basic steps:
+
+1. Choose $n_{sim}$
+2. Simulate data
+3. Apply method(s)
+4. Calculate estimates
+5. Store results
+
+
+Whenever possible, separate scripts for performing different tasks.
+
+# Simulation exercise: linear regression
+
+
+Our goal in this exercise will be to plan a well-organized simulation study for multiple linear regression. It will be similar in structure to your Homework 1. Below is a multiple linear regression model, where we are interested in primarily treatment effect.
+
+
+
+$$Y_i = \beta_0 + \beta_{treatment}X_{i1} + \mathbf{Z_i}^T\boldsymbol{\gamma} + \epsilon_i$$
+
+* $Y_i$: continuous outcome
+* $X_{i1}$: treatment group indicator; $X_{i1}=1$ for treated 
+* $\mathbf{Z_i}$: vector of potential confounders
+
+<br>
+
+
+* $\beta_{treatment}$: average treatment effect, adjusting for $\mathbf{Z_i}$
+* $\boldsymbol{\gamma}$: vector of regression coefficient values for confounders 
+* $\epsilon_i$: iid error, $\sim N(0, \sigma^2)$
+
+
+In our simulation, we want to 
+
+* Estimate $\beta_{treatment}$
+  - Evaluate through bias and coverage
+* Estimate $\sigma^2$
+  - Evaluate through bias
+
+* Evaluate these properties at:
+  - Sample size $n \in \{10, 50, 500\}$
+  - True values $\beta_{treatment} \in \{0.5, 2\}$
+  - True values $\sigma^2 \in \{1, 5\}$
+
+* Assume for now that there are no confounders ($\boldsymbol{\gamma} = 0$)
+* Assume $X_{i1} = 1$ with probability 0.5
+* Use a full factorial design
+
+## Planning stage
+
+### **Exercise 1**: ADEMP structure
+
+* How many simulation scenarios will you be running?
+
+**Answer**: 12
+  
+* What are the estimand(s)
+* What method(s) are being evaluated/compared?
+* What are the performance measure(s)?
+
+### **Exercise 2**: nSim
+
+Based on desired coverage of 90\% with Monte Carlo error of no more than 1\%, how many simulations ($n_{sim}$) should we perform for each simulation scenario?
+
+
+```{r}
+(.9*(1-.9))/(.01^2)
+```
+
+
+## Implementation stage
+
+Could also call this the "coding and execution stage". 
+
+
+1. Download the file `example_project.zip` from Canvas. Unzip and save in an organized location- this will become it's own GitHub repository.  **Note**: for Windows users, it may unzip in a strange way. You want your directory structure to look like the following:
+
+
+<img src="structure.png" style="width:50%">
+
+
+### **Exercise 3**: implementation
+
+Start implementing your simulation study! Write separate scripts for simulating data, applying the method, and extracting estimates. Use the `example_simulation` folder provided as a template for your structure.
+
+
+For now, choose **just one simulation scenario** to implement.  If you have time, you can implement others.
+
+### **Exercise 4**: aggretation
+
+Aggregate simulation results.  Use informative tables and/or figures to summarize results.
+

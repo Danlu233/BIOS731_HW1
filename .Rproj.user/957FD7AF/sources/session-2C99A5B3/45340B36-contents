@@ -1,0 +1,48 @@
+---
+title: "Homework 1 Report"
+author: "Danlu Zhang"
+date: "2025-02-03"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(tidy = FALSE)
+```
+
+### Problem 1.1 ADEMP Structure 
+
+
+* I will run 18 simulation scenarios.
+* Estimand is $\beta_{treatment}$
+* Wald confidence intervals, nonparametric boostrap percentile intervals and nonparametric bootstrap t intervals are being compared.
+* Performance measures include bias, empirical standard error, and coverage.
+
+
+### Problem 1.2 nSim 
+
+Based on desired coverage of 95\% with Monte Carlo error of no more than 1\%, 475 simulations should be performed for each simulation scenario.
+
+
+### Problem 1.3 Implementation 
+
+### Problem 1.4 Results summary
+
+Create a plot or table to summarize simulation results across scenarios and methods for each of the following. 
+
+- Bias of $\hat{\beta}$
+- Coverage of $\hat{\beta}$
+- Distribution of $se(\hat{\beta})$
+- Computation time across methods
+
+If creating a plot, I encourage faceting. Include informative captions for each plot and/or table.
+
+### Problem 1.5 Discussion
+
+Interpret the results summarized in Problem 1.4. First, write a **paragraph** summarizing the main findings of your simulation study. Then, answer the specific questions below.
+
+- How do the different methods for constructing confidence intervals compare in terms of computation time?
+- Which method(s) for constructing confidence intervals provide the best coverage when $\epsilon_i \sim N(0, 2)$?
+- Which method(s) for constructing confidence intervals provide the best coverage when $\epsilon_i \sim logNormal(0, \log (2))$?
+
+
