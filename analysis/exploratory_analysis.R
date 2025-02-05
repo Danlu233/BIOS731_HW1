@@ -61,14 +61,6 @@ png(here::here("results","figure_for_coverage.png"), width = 720, height = 540)
 p
 dev.off()
 
-dat_coverage$coverage_abs = abs(dat_coverage$coverage - 0.95)
-
-dat_coverage %>% filter(epsilon_dist == "normal") %>% group_by(n, true_beta) %>% slice_min(coverage_abs)
-dat_coverage %>% filter(epsilon_dist == "normal") %>% group_by(n, true_beta) %>% slice_max(coverage)
-
-dat_coverage %>% filter(epsilon_dist == "lognormal") %>% group_by(n, true_beta) %>% slice_min(coverage_abs)
-dat_coverage %>% filter(epsilon_dist == "lognormal") %>% group_by(n, true_beta) %>% slice_max(coverage)
-
 
 # computation time
 dat_time_w = all_results %>% 
@@ -97,3 +89,4 @@ p = ggplot(all_results, aes(x = std.error, color = factor(n))) +
 png(here::here("results","figure_for_se.png"), width = 720, height = 540)
 p
 dev.off()
+
