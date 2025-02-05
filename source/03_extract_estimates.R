@@ -11,4 +11,4 @@ get_estimates = function(model_fit, true_beta){
     rename(beta_hat = estimate) %>%
     select(term, beta_hat, std.error, coverage_wald, time_wald)
   
-}
+} 
