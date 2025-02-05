@@ -18,7 +18,7 @@ source(here::here("source", "05_nonparametric_boot_t_ci.R"))
 #number of simulations
 nsim = (.95*(1-.95))/(.01^2)
 
-nboot = 120
+nboot = 120 
 nboot_t = 60
 
 alpha = 0.05
