@@ -25,7 +25,7 @@ nonpara_boot_percentile = function(simdata, nboot = 500, size, true_beta, alpha 
   output = data.frame(coverage = ifelse(true_beta >= ci[1] & true_beta <= ci[2], 1, 0),
                       time = as.numeric(difftime(Sys.time(), start_time, units = "secs")))
   
-  return(output)  
+  return(output)   
 }
 
 
