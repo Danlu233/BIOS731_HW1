@@ -44,7 +44,7 @@ nonpara_boot_t = function(simdata, nboot = 500, nboot_t = 200, size, true_beta, 
   output = data.frame(coverage = ifelse(true_beta >= low_ci & true_beta <= up_ci, 1, 0),
                       time = as.numeric(difftime(Sys.time(), start_time, units = "secs")))
   
-  return(output)  
+  return(output)   
 }
 
 
