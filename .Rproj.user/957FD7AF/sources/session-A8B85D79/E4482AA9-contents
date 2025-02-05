@@ -24,5 +24,5 @@ simulate_data <- function(n, true_beta, dist_epsilon) {
      x = x,
      y = y
    )
-
+ 
 }

@@ -27,7 +27,7 @@ p = ggplot(dat_bias, aes(x = factor(n), y = beta_bias)) + geom_col() +
   labs(x = "Sample Size (n)", y = "Bias of estimated beta") + 
   theme(text = element_text(size = 22))
   
-png(here::here("results","figure_for_bias.png"), width = 720, height = 540)
+png(here::here("results","figure_for_bias.png"), width = 720, height = 720)
 p
 dev.off()
 
@@ -61,26 +61,36 @@ png(here::here("results","figure_for_coverage.png"), width = 720, height = 540)
 p
 dev.off()
 
+dat_coverage$coverage_abs = abs(dat_coverage$coverage - 0.95)
+
+dat_coverage %>% filter(epsilon_dist == "normal") %>% group_by(n, true_beta) %>% slice_min(coverage_abs)
+dat_coverage %>% filter(epsilon_dist == "normal") %>% group_by(n, true_beta) %>% slice_max(coverage)
+
+dat_coverage %>% filter(epsilon_dist == "lognormal") %>% group_by(n, true_beta) %>% slice_min(coverage_abs)
+dat_coverage %>% filter(epsilon_dist == "lognormal") %>% group_by(n, true_beta) %>% slice_max(coverage)
+
 
 # computation time
-dat_time_w = all_results %>% group_by(n) %>%
-  summarise(time = mean(time_wald)) %>% mutate(method = "Wald confidence intervals")
+dat_time_w = all_results %>% 
+  summarise(time = mean(time_wald)) %>% 
+  mutate(method = "Wald confidence intervals")
 
-dat_time_p = all_results %>% group_by(n) %>%
+dat_time_p = all_results %>% 
   summarise(time = mean(time_p)) %>% mutate(method = "bootstrap percentile intervals")
 
-dat_time_t = all_results %>% group_by(n) %>%
+dat_time_t = all_results %>% 
   summarise(time = mean(time_t)) %>% mutate(method = "bootstrap t intervals")
 
 dat_time = rbind(dat_time_w, dat_time_p, dat_time_t)
 
-write.csv(dat_time, here::here("results","cimputation_time.csv"), row.names = F)
+write.csv(dat_time, here::here("results","computation_time.csv"), row.names = F)
 
 # distribution of se
 p = ggplot(all_results, aes(x = std.error, color = factor(n))) + 
   geom_density(linewidth = 1) + 
   facet_grid(rows = vars(epsilon_dist), cols = vars(true_beta),
-             labeller = labeller(true_beta = function(x) paste0("True beta = ", x))) +
+             labeller = labeller(true_beta = function(x) paste0("True beta = ", x)),
+             scales = "free_y") +
   labs(x = "Standard Error", y = "Density", color = "Sample Size (n)") + 
   theme(text = element_text(size = 20), legend.position = "bottom")
 

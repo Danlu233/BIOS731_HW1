@@ -1,3 +1,5 @@
 # Ignore .rds files
 *.RDA
-
+*.pdf
+*.png
+*.csv
